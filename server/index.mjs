@@ -69,6 +69,25 @@ const areaData = [
   }
 ]
 
+const barData = [
+  { name: "Page A", uv: Math.random()*4000, pv: Math.random()*2400, amt: 2400 },
+  { name: "Page B", uv: Math.random()*3000, pv: Math.random()*1398, amt: 2210 },
+  { name: "Page C", uv: Math.random()*2000, pv: Math.random()*9800, amt: 2290 },
+  { name: "Page D", uv: Math.random()*2780, pv: Math.random()*3908, amt: 2000 },
+  { name: "Page E", uv: Math.random()*1890, pv: Math.random()*4800, amt: 2181 },
+  { name: "Page F", uv: Math.random()*2390, pv: Math.random()*3800, amt: 2500 }
+];
+
+function nextLetterInAlphabet(letter) {
+  if (letter == "z") {
+    return "a";
+  } else if (letter == "Z") {
+    return "A";
+  } else {
+    return String.fromCharCode(letter.charCodeAt(0) + 1);
+  }
+}
+
 server.on("connection", (socket) => {
   if(timeChnage) clearInterval(timeChnage)
   if(lineData.length > 5){
@@ -76,7 +95,8 @@ server.on("connection", (socket) => {
     lineData.reverse()
   }
   lineData.push({ name: lineData[lineData.length - 1].name+1,x: Math.random() * 10, y: Math.random() * 10 })
-  if(areaData.length > 5){
+  
+  if(areaData.length > 7){
     areaData.reverse().pop()
     areaData.reverse()
   }
@@ -86,10 +106,21 @@ server.on("connection", (socket) => {
     "pv": randomIntFromInterval(1000,3500),
     "amt": randomIntFromInterval(3500,5500)
   })
+
+  if(barData.length > 6){ 
+    barData.reverse().pop()
+    barData.reverse()
+  }
+  barData.push({
+    name: "Page "+(nextLetterInAlphabet(barData[barData.length -1].name.split(" ")[1])),
+    uv: Math.random()*1890,
+    pv: Math.random()*2990,
+    amt: Math.random()*5000
+  })
   setInterval(()=>{
     console.log('emiting')
-    socket.emit("lineData", lineData) 
-    socket.emit("areaData", areaData) 
+    socket.emit("chartData", {lineData,areaData,barData}) 
+    //socket.emit("areaData", areaData) 
   },6000)
   
 })
